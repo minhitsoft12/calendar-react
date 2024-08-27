@@ -30,9 +30,11 @@ export default function Calendar(): ReactElement {
         title,
         start: selectInfo.start.toISOString(),
         end: selectInfo.end.toISOString(),
-        resourceId: selectInfo.resource._resource.id,
-        allDay: selectInfo.allDay
-      }
+        ...(selectInfo?.resource?._resource.id
+          ? { resourceId: selectInfo?.resource?._resource.id }
+          : { resourceIds: resources.map(resource => resource.id) }),
+        allDay: selectInfo.allDay,
+      };
       dispatch(addEvent(data))
       calendarApi.addEvent(data)
     }
@@ -53,7 +55,17 @@ export default function Calendar(): ReactElement {
   }
 
   const handleEventChange = (changeInfo) => {
-    dispatch(updateEvent(changeInfo.event.toPlainObject()))
+    if (changeInfo.event._def.resourceIds[0]) {
+      const data = {
+        id: changeInfo.event.id,
+        title: changeInfo.event.title,
+        start: changeInfo.event.startStr,
+        end: changeInfo.event.endStr,
+        resourceId: changeInfo.event._def.resourceIds[0],
+        allDay: changeInfo.event.allDay,
+      }
+      dispatch(updateEvent(data))
+    }
   }
 
 
