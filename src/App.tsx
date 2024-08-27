@@ -1,10 +1,14 @@
-import './App.css'
-import Calendar from "./features/calendar/Calendar.tsx";
+import '@/App.scss'
+import Calendar from "@/features/calendar/Calendar.tsx";
 
 
 function App() {
-  return (
-      <Calendar />
+  return (<div className="calendar-page">
+      <div className="container mx-auto">
+        <Calendar/>
+      </div>
+    </div>
+
   )
 }
 

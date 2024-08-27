@@ -1,9 +1,9 @@
-import { ReactElement, RefObject } from "react";
+import {ReactElement, RefObject} from "react";
 import FullCalendar from "@fullcalendar/react";
-import { Button, DatePicker, Flex, Select } from "antd";
-import { calendarViews } from "../../../share/utils/constants.ts";
-import { useAppDispatch, useAppSelector } from "../../../hooks/storeHook.ts";
-import { setViewType } from "../calendarSlice.ts";
+import {Button, DatePicker, Divider, Select, Space, Switch} from "antd";
+import {calendarViews} from "@/share/utils/constants.ts";
+import {useAppDispatch, useAppSelector} from "@/hooks/storeHook.ts";
+import {setShowWeekends, setViewType} from "@/features/calendar/calendarSlice.ts";
 import dayjs from "dayjs";
 
 export type TCalendarHeader = {
@@ -11,7 +11,7 @@ export type TCalendarHeader = {
 };
 
 export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
-  const { viewType } = useAppSelector((state) => state.calendar);
+  const {viewType, showWeekends} = useAppSelector((state) => state.calendar);
   const dispatch = useAppDispatch();
 
   const selectViewHandle = (value: string) => {
@@ -27,16 +27,24 @@ export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
   };
 
   return (
-    <Flex
-      justify="space-between"
-      align="center"
-      style={{ margin: "0 auto", maxWidth: "1140px" }}
-    >
+    <div className="flex justify-between items-center">
       <Select
         defaultValue={viewType}
-        style={{ width: 120 }}
+        style={{width: 85}}
         onChange={selectViewHandle}
+        popupMatchSelectWidth={false}
         options={calendarViews}
+        dropdownRender={(menu) => (
+          <>
+            {menu}
+            <Divider style={{margin: '8px 0'}}/>
+            <Space style={{padding: '0 8px 4px'}}>
+              <Switch size="small" defaultChecked={showWeekends} onChange={(e) => {
+                dispatch(setShowWeekends(e))
+              }}/> Show weekends
+            </Space>
+          </>
+        )}
       />
       <div>
         <DatePicker
@@ -84,6 +92,6 @@ export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
           Next
         </Button>
       </div>
-    </Flex>
+    </div>
   );
 };

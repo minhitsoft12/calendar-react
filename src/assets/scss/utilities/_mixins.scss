@@ -1,0 +1,269 @@
+@mixin transitions($property) {
+    -webkit-transition: $property;
+    -moz-transition: $property;
+    -ms-transition: $property;
+    -o-transition: $property;
+    transition: $property;
+}
+
+@mixin animations($property) {
+    -webkit-animation: $property;
+    -moz-animation: $property;
+    -o-animation: $property;
+    -ms-animation: $property;
+    animation: $property;
+}
+@mixin animation-duration($property) {
+    -webkit-animation-duration: $property;
+    -moz-animation-duration: $property;
+    -ms-animation-duration: $property;
+    -o-animation-duration: $property;
+    animation-duration: $property;
+}
+@mixin animation-mode($property) {
+    -webkit-animation-fill-mode: $property;
+    -moz-animation-fill-mode: $property;
+    -ms-animation-fill-mode: $property;
+    -o-animation-fill-mode: $property;
+    animation-fill-mode: $property;
+}
+@mixin animation-iteration($property) {
+    -webkit-animation-iteration-count: $property;
+    -moz-animation-iteration-count: $property;
+    -ms-animation-iteration-count: $property;
+    -o-animation-iteration-count: $property;
+    animation-iteration-count: $property;
+}
+@mixin animation-name($property) {
+    -webkit-animation-name: $property;
+    -moz-animation-name: $property;
+    -ms-animation-name: $property;
+    -o-animation-name: $property;
+    animation-name: $property;
+}
+@mixin animation-timing($property) {
+    -webkit-animation-timing-function: $property;
+    -moz-animation-timing-function: $property;
+    -ms-animation-timing-function: $property;
+    -o-animation-timing-function: $property;
+    animation-timing-function: $property;
+}
+@mixin animation-delay($property) {
+    -webkit-animation-delay: $property;
+    -moz-animation-delay: $property;
+    -ms-animation-delay: $property;
+    -o-animation-delay: $property;
+    animation-delay: $property;
+}
+
+@mixin transform($property) {
+    -webkit-transform: $property;
+    -moz-transform: $property;
+    -ms-transform: $property;
+    -o-transform: $property;
+    transform: $property;
+}
+
+@mixin flexwrap {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+@mixin reset-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+@mixin centeritem {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin betweenitems {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    justify-content: space-between;
+}
+@mixin betweentop {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: flex-start;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+@mixin betweenbottom {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: flex-end;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+@mixin flexleftcenter {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+@mixin flexcenter {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+@mixin flextop {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: flex-start;
+    align-items: flex-start;
+}
+@mixin flexbottom {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: flex-end;
+    align-items: flex-end;
+}
+
+@mixin flexend {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+@mixin flexinline {
+    display: inline-flex;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+@mixin flexcolumns {
+    display: -ms-flexbox;
+    display: flex;
+    flex-flow: column;
+    flex-direction: column;
+}
+
+@mixin text-ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+@mixin text-line-clamp($property) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-word;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $property;
+}
+
+@mixin size($property) {
+    width: $property;
+    height: $property;
+}
+
+@mixin border($color, $radius, $bgColor) {
+    border-radius: $radius;
+
+    @if ($color != 'null') {
+        border: 1px solid $color;
+    } @else if ($bgColor != 'null') {
+        background-color: $bgColor;
+    }
+}
+
+@mixin font-color($lineHeight, $fontSize, $color) {
+    line-height: $lineHeight;
+    font-size: $fontSize;
+    color: $color;
+}
+
+// placeholder
+@mixin placeholder {
+    &::-webkit-input-placeholder {
+        /* Chrome/Opera/Safari */
+        @content;
+    }
+
+    &::-moz-placeholder {
+        /* Firefox 19+ */
+        @content;
+    }
+
+    &:-ms-input-placeholder {
+        /* IE 10+ */
+        @content;
+    }
+
+    &:-moz-placeholder {
+        /* Firefox 18- */
+        @content;
+    }
+}
+
+@mixin hover-supported {
+    @media not all and (pointer: coarse) {
+        &:hover {
+            @content;
+        }
+    }
+}
+@mixin user-select($property) {
+    -moz-user-select: ($property);
+    -webkit-user-select: ($property);
+    -ms-user-select: ($property);
+    user-select: ($property);
+}
+
+// Process circle
+@mixin draw-progress($progress-cirle, $progress-color) {
+    .circle {
+        .half-circle {
+            border-color: $progress-color;
+            &--left {
+                @include transform(rotate($progress-cirle * 3.6deg));
+            }
+        }
+
+        @if $progress-cirle <= 50 {
+            .half-circle--right {
+                display: none;
+            }
+        } @else {
+            clip: rect(auto, auto, auto, auto);
+
+            .half-circle--right {
+                @include transform(rotate(180deg));
+            }
+        }
+    }
+}
+// Grid layout
+@mixin grid($grid-rows: null, $grid-columns: null, $gap: null) {
+    display: grid !important;
+    gap: $gap;
+    grid-template-rows: $grid-rows;
+    grid-template-columns: $grid-columns;
+}
+.wrap-border {
+    background: #fff;
+    border: 1px solid #dadbdb;
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.06), 0px 0px 2px rgba(0, 0, 0, 0.04), 0px 0px 1px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+}
