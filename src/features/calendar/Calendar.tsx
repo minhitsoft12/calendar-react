@@ -1,20 +1,21 @@
-import { ReactElement, useRef, useState } from "react";
+import {ReactElement, useRef} from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
-import {createEventId, INITIAL_EVENTS} from "../../share/utils/calendarEvent.ts";
 import {
   DateSelectArg,
-  EventApi,
   EventClickArg,
   EventContentArg,
 } from "@fullcalendar/core";
 import { Sidebar } from "./components/Sidebar.tsx";
+import {useAppDispatch, useAppSelector} from "../../hooks/storeHook.ts";
+import {addEvent} from "../../features/calendar/calendarSlice.ts";
 
 export default function Calendar(): ReactElement {
-  const [currentEvents, setCurrentEvents] = useState<EventApi[]>(INITIAL_EVENTS);
+  const { events, resources } = useAppSelector(state => state.calendar);
+  const dispatch = useAppDispatch();
   const calendarRef = useRef<FullCalendar>(null);
 
   function handleDateSelect(selectInfo: DateSelectArg) {
@@ -24,13 +25,14 @@ export default function Calendar(): ReactElement {
     calendarApi.unselect();
 
     if (title) {
-      calendarApi.addEvent({
-        id: createEventId(),
+      dispatch(addEvent({
         title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
+        start: selectInfo.start,
+        end: selectInfo.end,
+        startStr: selectInfo.startStr,
+        endStr: selectInfo.endStr,
         allDay: selectInfo.allDay,
-      })
+      }))
     }
   }
 
@@ -44,9 +46,9 @@ export default function Calendar(): ReactElement {
     }
   }
 
-  function handleEvents(events: EventApi[]): void {
-    setCurrentEvents(events);
-  }
+  // function handleEvents(events: EventApi[]): void {
+  //   setCurrentEvents(events);
+  // }
 
   return (
     <div className="demo-app">
@@ -62,15 +64,15 @@ export default function Calendar(): ReactElement {
             interactionPlugin,
             resourceTimeGridPlugin,
           ]}
-          resources={[{ title: "Invoice" }]}
+          resources={resources}
           editable={true}
           selectable={true}
+          events={events}
           weekends
-          initialEvents={currentEvents}
           select={handleDateSelect}
           eventContent={renderEventContent}
           eventClick={handleEventClick}
-          eventsSet={handleEvents}
+
         />
       </div>
     </div>
