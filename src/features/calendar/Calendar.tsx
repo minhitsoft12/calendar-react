@@ -1,4 +1,4 @@
-import {ReactElement, useRef} from "react";
+import { ReactElement, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -9,13 +9,19 @@ import {
   EventClickArg,
   EventContentArg,
 } from "@fullcalendar/core";
-import {calendarViews, Sidebar} from "./components/Sidebar.tsx";
-import {useAppDispatch, useAppSelector} from "../../hooks/storeHook.ts";
-import {addEvent, removeEvent, updateEvent} from "../../features/calendar/calendarSlice.ts";
-import {createEventId} from "../../share/utils/calendarEvent.ts";
+import { Sidebar } from "./components/Sidebar.tsx";
+import { useAppDispatch, useAppSelector } from "../../hooks/storeHook.ts";
+import {
+  addEvent,
+  removeEvent,
+  updateEvent,
+} from "../../features/calendar/calendarSlice.ts";
+import { createEventId } from "../../share/utils/calendarEvent.ts";
 
 export default function Calendar(): ReactElement {
-  const { events, resources } = useAppSelector(state => state.calendar);
+  const { events, resources, viewType } = useAppSelector(
+    (state) => state.calendar,
+  );
   const dispatch = useAppDispatch();
   const calendarRef = useRef<FullCalendar>(null);
 
@@ -32,11 +38,11 @@ export default function Calendar(): ReactElement {
         end: selectInfo.end.toISOString(),
         ...(selectInfo?.resource?._resource.id
           ? { resourceId: selectInfo?.resource?._resource.id }
-          : { resourceIds: resources.map(resource => resource.id) }),
+          : { resourceIds: resources.map((resource) => resource.id) }),
         allDay: selectInfo.allDay,
       };
-      dispatch(addEvent(data))
-      calendarApi.addEvent(data)
+      dispatch(addEvent(data));
+      calendarApi.addEvent(data);
     }
   }
 
@@ -52,7 +58,7 @@ export default function Calendar(): ReactElement {
 
   const handleEventRemove = (removeInfo) => {
     dispatch(removeEvent(removeInfo.event.id));
-  }
+  };
 
   const handleEventChange = (changeInfo) => {
     if (changeInfo.event._def.resourceIds[0]) {
@@ -63,11 +69,10 @@ export default function Calendar(): ReactElement {
         end: changeInfo.event.endStr,
         resourceId: changeInfo.event._def.resourceIds[0],
         allDay: changeInfo.event.allDay,
-      }
-      dispatch(updateEvent(data))
+      };
+      dispatch(updateEvent(data));
     }
-  }
-
+  };
 
   return (
     <div className="demo-app">
@@ -76,8 +81,12 @@ export default function Calendar(): ReactElement {
         <FullCalendar
           schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
           ref={calendarRef}
-          headerToolbar={false}
-          initialView={calendarViews[1].value}
+          headerToolbar={{
+            left: "",
+            center: "title",
+            right: "",
+          }}
+          initialView={viewType}
           plugins={[
             dayGridPlugin,
             timeGridPlugin,
@@ -89,7 +98,7 @@ export default function Calendar(): ReactElement {
           editable={true}
           selectable={true}
           events={events}
-          weekends={false}
+          weekends
           select={handleDateSelect}
           eventContent={renderEventContent}
           eventClick={handleEventClick}

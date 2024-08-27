@@ -1,50 +1,29 @@
-import { ReactElement, RefObject, useState } from "react";
+import { ReactElement, RefObject } from "react";
 import FullCalendar from "@fullcalendar/react";
-
-import moment from "moment";
 import { Button, DatePicker, Flex, Select } from "antd";
+import { calendarViews } from "../../../share/utils/constants.ts";
+import { useAppDispatch, useAppSelector } from "../../../hooks/storeHook.ts";
+import { setViewType } from "../calendarSlice.ts";
+import dayjs from "dayjs";
 
-const { RangePicker } = DatePicker;
 export type TCalendarHeader = {
   calendarRef: RefObject<FullCalendar>;
 };
 
-export const calendarViews = [
-  {
-    label: "Day",
-    value: "resourceTimeGridDay",
-  },
-  {
-    label: "Week",
-    value: "resourceTimeGridWeek",
-  },
-  {
-    label: "Month",
-    value: "dayGridMonth",
-  },
-];
-
-const dateFormat = "YYYY-MM-DD";
-
 export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
-  const [view, setView] = useState<string>(calendarViews[1].value);
+  const { viewType } = useAppSelector((state) => state.calendar);
+  const dispatch = useAppDispatch();
 
   const selectViewHandle = (value: string) => {
     const calApi = calendarRef.current?.getApi();
     calApi?.changeView(value);
     calApi?.refetchEvents();
-    setView(value);
+    dispatch(setViewType(value));
   };
 
-  const handleDateChange = (_dates, dateStrings: string[]) => {
-    console.log(moment(dateStrings[0]).format(dateFormat));
+  const handleDateChange = (value) => {
     const calApi = calendarRef.current?.getApi();
-
-    // TODO: Not working yet
-    calApi?.changeView(view, {
-      start: moment(dateStrings[0]).format(dateFormat),
-      end: moment(dateStrings[1]).format(dateFormat),
-    });
+    calApi?.gotoDate(value.toDate());
   };
 
   return (
@@ -54,13 +33,23 @@ export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
       style={{ margin: "0 auto", maxWidth: "1140px" }}
     >
       <Select
-        defaultValue={view}
+        defaultValue={viewType}
         style={{ width: 120 }}
         onChange={selectViewHandle}
         options={calendarViews}
       />
       <div>
-        <RangePicker onChange={handleDateChange} />
+        <DatePicker
+          defaultValue={dayjs()}
+          onChange={handleDateChange}
+          picker={
+            viewType === calendarViews[0].value
+              ? "date"
+              : viewType === calendarViews[1].value
+                ? "week"
+                : "month"
+          }
+        />
         <Button
           style={{ marginLeft: "10px" }}
           onClick={() => {
