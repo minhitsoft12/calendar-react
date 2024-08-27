@@ -57,7 +57,7 @@ export default function Calendar(): ReactElement {
         <FullCalendar
           schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
           ref={calendarRef}
-          // headerToolbar={false}
+          headerToolbar={false}
           plugins={[
             dayGridPlugin,
             timeGridPlugin,

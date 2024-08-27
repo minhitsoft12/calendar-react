@@ -17,6 +17,10 @@ const calendarViews = [
   {
     label: "Week",
     value: "resourceTimeGridWeek",
+  },
+  {
+    label: "Month",
+    value: "dayGridMonth",
   }
 ];
 
