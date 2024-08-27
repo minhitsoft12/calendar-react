@@ -1,31 +1,34 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { EventInput } from "@fullcalendar/core";
 import { ResourceSourceInput } from "@fullcalendar/resource";
-import { createEventId } from "../../share/utils/calendarEvent.ts";
+import { INITIAL_EVENTS } from "../../share/utils/calendarEvent.ts";
 
 interface CalendarSlice {
   events: EventInput[];
   resources: ResourceSourceInput;
 }
 
-type EventApiNew = Omit<EventInput, "id">;
-
 const initialState: CalendarSlice = {
-  events: [],
-  resources: [{ title: "Invoice" }],
+  events: INITIAL_EVENTS,
+  resources: [{ id: "invoice", title: "Invoice" }],
 };
 
 const calendarSlice = createSlice({
   name: "calendar",
   initialState,
   reducers: {
-    addEvent: (state, action: PayloadAction<EventApiNew>) => {
-      const eventId = createEventId();
-      const newEvent = {
-        id: eventId,
-        ...action.payload,
-      };
-      state.events.push(newEvent);
+    addEvent: (state, action: PayloadAction<EventInput>) => {
+      state.events.push(action.payload);
+    },
+    setEvents: (state, action: PayloadAction<EventInput[]>) => {
+      state.events = action.payload
+    },
+    updateEvent: (state, action: PayloadAction<EventInput>) => {
+      const eventId = action.payload.id;
+      if (eventId) {
+        const index = state.events.findIndex(({ id }) => id === eventId);
+        state.events[index] = action.payload;
+      }
     },
     removeEvent: (state, action: PayloadAction<string>) => {
       state.events.splice(
@@ -33,19 +36,9 @@ const calendarSlice = createSlice({
         1,
       );
     },
-  },
-  // extraReducers: (builder) => {
-  //   builder.addMatcher((action) => action.type === addEvent, (state, action: PayloadAction<EventApiNew>) => {
-  //     const eventId = createEventId();
-  //     const newEvent = {
-  //       id: eventId,
-  //       ...action.payload,
-  //     }
-  //     state.events.push(newEvent)
-  //   })
-  // }
+  }
 });
 
-export const { addEvent, removeEvent } = calendarSlice.actions;
+export const { addEvent, removeEvent, setEvents, updateEvent } = calendarSlice.actions;
 
 export default calendarSlice.reducer;

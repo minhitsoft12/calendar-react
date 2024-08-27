@@ -2,14 +2,14 @@ import { ReactElement, RefObject, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 
 import moment from "moment";
-import {Button, DatePicker, Flex, Select} from "antd";
+import { Button, DatePicker, Flex, Select } from "antd";
 
 const { RangePicker } = DatePicker;
 export type TCalendarHeader = {
   calendarRef: RefObject<FullCalendar>;
 };
 
-const calendarViews = [
+export const calendarViews = [
   {
     label: "Day",
     value: "resourceTimeGridDay",
@@ -21,10 +21,10 @@ const calendarViews = [
   {
     label: "Month",
     value: "dayGridMonth",
-  }
+  },
 ];
 
-const dateFormat = 'YYYY-MM-DD';
+const dateFormat = "YYYY-MM-DD";
 
 export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
   const [view, setView] = useState<string>(calendarViews[1].value);
@@ -32,64 +32,69 @@ export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
   const selectViewHandle = (value: string) => {
     const calApi = calendarRef.current?.getApi();
     calApi?.changeView(value);
+    calApi?.refetchEvents();
     setView(value);
   };
 
-  const handleDateChange = (values): void => {
-    console.log(moment(values[0].$d).format(dateFormat))
+  const handleDateChange = (_dates, dateStrings: string[]) => {
+    console.log(moment(dateStrings[0]).format(dateFormat));
     const calApi = calendarRef.current?.getApi();
 
     // TODO: Not working yet
     calApi?.changeView(view, {
-      start: moment(values[0].$d).format(dateFormat),
-      end: moment(values[1].$d).format(dateFormat),
+      start: moment(dateStrings[0]).format(dateFormat),
+      end: moment(dateStrings[1]).format(dateFormat),
     });
   };
 
   return (
-    <Flex justify="space-between" align="center" style={{margin: "0 auto", maxWidth: "1140px"}}>
-        <Select
-          defaultValue={view}
-          style={{ width: 120 }}
-          onChange={selectViewHandle}
-          options={calendarViews}
-        />
-        <div>
-          <RangePicker onChange={handleDateChange} />
-          <Button
-            style={{marginLeft: "10px"}}
-            onClick={() => {
-              const calApi = calendarRef.current?.getApi();
-              if (calApi) {
-                calApi.prev();
-              }
-            }}
-          >
-            Prev
-          </Button>
-          <Button
-            style={{marginLeft: "10px"}}
-            onClick={() => {
-              const calApi = calendarRef.current?.getApi();
-              if (calApi) {
-                calApi.today();
-              }
-            }}
-          >
-            Today
-          </Button>
-          <Button
-            style={{marginLeft: "10px"}}
-            onClick={() => {
-              const calApi = calendarRef.current?.getApi();
-              if (calApi) {
-                calApi.next();
-              }
-            }}
-          >
-            Next
-          </Button>
-        </div>
+    <Flex
+      justify="space-between"
+      align="center"
+      style={{ margin: "0 auto", maxWidth: "1140px" }}
+    >
+      <Select
+        defaultValue={view}
+        style={{ width: 120 }}
+        onChange={selectViewHandle}
+        options={calendarViews}
+      />
+      <div>
+        <RangePicker onChange={handleDateChange} />
+        <Button
+          style={{ marginLeft: "10px" }}
+          onClick={() => {
+            const calApi = calendarRef.current?.getApi();
+            if (calApi) {
+              calApi.prev();
+            }
+          }}
+        >
+          Prev
+        </Button>
+        <Button
+          style={{ marginLeft: "10px" }}
+          onClick={() => {
+            const calApi = calendarRef.current?.getApi();
+            if (calApi) {
+              calApi.today();
+            }
+          }}
+        >
+          Today
+        </Button>
+        <Button
+          style={{ marginLeft: "10px" }}
+          onClick={() => {
+            const calApi = calendarRef.current?.getApi();
+            if (calApi) {
+              calApi.next();
+            }
+          }}
+        >
+          Next
+        </Button>
+      </div>
     </Flex>
   );
 };
