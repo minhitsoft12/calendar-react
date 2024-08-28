@@ -6,6 +6,8 @@ import {useAppDispatch, useAppSelector} from "@/hooks/storeHook.ts";
 import {setShowWeekends, setViewType} from "@/features/calendar/calendarSlice.ts";
 import dayjs from "dayjs";
 
+const { RangePicker } = DatePicker
+
 export type TCalendarHeader = {
   calendarRef: RefObject<FullCalendar>;
 };
@@ -47,17 +49,11 @@ export const Sidebar = ({ calendarRef }: TCalendarHeader): ReactElement => {
         )}
       />
       <div>
-        <DatePicker
-          defaultValue={dayjs()}
-          onChange={handleDateChange}
-          picker={
-            viewType === calendarViews[0].value
-              ? "date"
-              : viewType === calendarViews[1].value
-                ? "week"
-                : "month"
-          }
-        />
+        {viewType === calendarViews[0].value
+          ? <DatePicker
+		        defaultValue={dayjs()}
+            defaultPickerValue={dayjs()}
+		        onChange={handleDateChange}/> : <RangePicker defaultPickerValue={viewType === calendarViews[1].value ? [dayjs(), dayjs()]} defaultValue={[dayjs(), dayjs()]}/>}
         <Button
           style={{ marginLeft: "10px" }}
           onClick={() => {

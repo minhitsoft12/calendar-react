@@ -5,10 +5,11 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import {EventClickArg, EventContentArg,} from "@fullcalendar/core";
-import {Sidebar} from "@/features/calendar/components/Sidebar.tsx";
+// import {Sidebar} from "@/features/calendar/components/Sidebar.tsx";
 import {useAppDispatch, useAppSelector} from "@/hooks/storeHook.ts";
 import {addEvent, removeEvent, updateEvent,} from "@/features/calendar/calendarSlice";
 import {createEventId} from "@/share/utils/calendarEvent.ts";
+import {CustomDatePicker} from "@/features/calendar/components/TestCalendar.tsx";
 
 export default function Calendar(): ReactElement {
   const { events, resources, viewType, showWeekends } = useAppSelector(
@@ -68,7 +69,8 @@ export default function Calendar(): ReactElement {
 
   return (
     <div id="displayView" className="calendar-container calendar-mode-vertical display-vertical">
-      <Sidebar calendarRef={calendarRef} />
+      {/*<Sidebar calendarRef={calendarRef} />*/}
+      <CustomDatePicker calendarRef={calendarRef} />
       <div className="wrapper-main-page">
         <div className="view-calendar view-month">
           <div id="fullCalendar" className="full-calendar">
@@ -76,11 +78,7 @@ export default function Calendar(): ReactElement {
               <FullCalendar
                 schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
                 ref={calendarRef}
-                headerToolbar={{
-                  left: "",
-                  center: "title",
-                  right: "",
-                }}
+                headerToolbar={false}
                 initialView={viewType}
                 plugins={[
                   dayGridPlugin,
