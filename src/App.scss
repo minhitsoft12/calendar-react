@@ -1,0 +1,11 @@
+@import "assets/scss/utilities/mixins";
+@import "assets/scss/utilities/variables";
+
+body {
+  font-family: "Inter", sans-serif !important;
+  font-size: 0.785rem;
+}
+
+@import "assets/scss/datepicker";
+
+

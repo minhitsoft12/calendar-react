@@ -1,20 +1,25 @@
-import {ReactElement, RefObject, useMemo, useState} from "react";
+import {ReactElement, RefObject, useMemo, useRef, useState} from "react";
 import FullCalendar from "@fullcalendar/react";
-import {Divider, Select, Space, Switch} from "antd";
+import {Divider, Space, Switch} from "antd";
 import {calendarViews} from "@/share/utils/constants.ts";
 import {useAppDispatch, useAppSelector} from "@/hooks/storeHook.ts";
 import {setShowWeekends, setViewType} from "@/features/calendar/calendarSlice.ts";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import {format} from "date-fns";
+import DatePickerHeader from "@/features/calendar/components/datepicker/DatePickerHeader.tsx";
+import {getFirstOfWeek, getLastOfWeek} from "@/share/utils/calendarEvent.ts";
 
 export type TCalendarHeader = {
   calendarRef: RefObject<FullCalendar>;
 };
 
-export const CustomDatePicker = ({calendarRef}: TCalendarHeader): ReactElement => {
+const CalendarNavbar = ({calendarRef}: TCalendarHeader): ReactElement => {
+  const dateNow = new Date()
   const {viewType, showWeekends} = useAppSelector((state) => state.calendar);
-  const [dateSelected, setDateSelected] = useState<Date>(new Date());
+  const [dateSelected, setDateSelected] = useState<Date>(dateNow);
+  const [startDateSelected, setStartDateSelected] = useState<Date>(dateNow);
+  const [endDateSelected, setEndDateSelected] = useState<Date>(dateNow);
+  const btnDropdownViewTypeRef = useRef<HTMLDivElement | null>(null)
   const dispatch = useAppDispatch();
 
   const selectViewHandle = (value: string) => {
@@ -23,13 +28,35 @@ export const CustomDatePicker = ({calendarRef}: TCalendarHeader): ReactElement =
       calApi?.changeView(value);
       calApi?.refetchEvents();
       dispatch(setViewType(value));
+      if (btnDropdownViewTypeRef.current) {
+        console.log(btnDropdownViewTypeRef.current);
+
+        btnDropdownViewTypeRef.current.click()
+      }
     }
   };
 
-  const handleDateChange = (value) => {
-    setDateSelected(value);
+  const handleDateChange = (value: any) => {
+    const dateValue = new Date(value.length ? value[0] : value);
+    if (viewType === calendarViews[0].value) {
+      setDateSelected(value);
+    }
+
+    if (viewType === calendarViews[1].value) {
+      setStartDateSelected(getFirstOfWeek(dateValue))
+      setEndDateSelected(getLastOfWeek(dateValue))
+    }
+
+    if (viewType === calendarViews[2].value) {
+      const y = dateValue.getFullYear(), m = dateValue.getMonth();
+      const firstDay = new Date(y, m, 1);
+      const lastDay = new Date(y, m + 1, 0);
+      setStartDateSelected(firstDay)
+      setEndDateSelected(lastDay)
+    }
+
     const calApi = calendarRef.current?.getApi();
-    calApi?.gotoDate(value);
+    calApi?.gotoDate(dateValue);
   };
 
   const dateFormat = useMemo(() => {
@@ -42,7 +69,7 @@ export const CustomDatePicker = ({calendarRef}: TCalendarHeader): ReactElement =
     <div className="navbar -mx-2">
       <div className="navbar-start">
         <div className="dropdown dropdown-bottom">
-          <div tabIndex={0} role="button" className="btn btn-outline font-normal btn-sm w-[90px] px-2">{viewTypeLabel}
+          <div tabIndex={0} ref={btnDropdownViewTypeRef} role="button" className="btn btn-outline font-normal btn-sm w-[90px] px-2">{viewTypeLabel}
             <svg width="6" height="3" className="ml-2 overflow-visible" aria-hidden="true">
               <path d="M0 0L3 3L6 0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
             </svg>
@@ -56,7 +83,8 @@ export const CustomDatePicker = ({calendarRef}: TCalendarHeader): ReactElement =
               }}/> Show weekends
             </Space>
           </ul>
-        </div></div>
+        </div>
+      </div>
       <div className="navbar-center">
         <div className="join">
           <button className="btn join-item btn-outline font-normal btn-sm" onClick={() => {
@@ -80,8 +108,8 @@ export const CustomDatePicker = ({calendarRef}: TCalendarHeader): ReactElement =
             <div tabIndex={0} role="button" className="btn btn-outline font-normal btn-sm join-item">{dateFormat}</div>
             <div tabIndex={0} className="dropdown-content bg-base-100 rounded-box z-[10] p-2 shadow">
               {viewType === calendarViews[0].value
-                ? <DatePicker inline onChange={handleDateChange} monthsShown={2} selected={dateSelected} startDate={dateSelected} calendarClassName="outline"/> :
-                <DatePicker inline monthsShown={2} startDate={dateSelected} selectsRange={true}/>}
+                ? <DatePicker renderCustomHeader={DatePickerHeader} inline onChange={handleDateChange} monthsShown={2} selected={dateSelected} startDate={dateSelected} /> :
+                <DatePicker inline startDate={startDateSelected} endDate={endDateSelected} onChange={handleDateChange} monthsShown={2} selectsRange={true}/>}
             </div>
           </div>
           <button className="btn join-item btn-outline font-normal btn-sm" onClick={() => {
@@ -100,3 +128,5 @@ export const CustomDatePicker = ({calendarRef}: TCalendarHeader): ReactElement =
     </div>
   );
 };
+
+export default CalendarNavbar

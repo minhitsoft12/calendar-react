@@ -1,15 +1,8 @@
-import { v4 as uuidv4 } from "uuid"
-
 let eventGuid = 0
 const todayStr = new Date().toISOString().replace(/T.*$/, '') // YYYY-MM-DD of today
+const lengthId = 8;
 
 export const INITIAL_EVENTS = [
-  {
-    id: createEventId(),
-    title: 'All-day event',
-    start: todayStr,
-    resourceId: "invoice1"
-  },
   {
     id: createEventId(),
     title: 'Timed event',
@@ -18,6 +11,25 @@ export const INITIAL_EVENTS = [
   }
 ]
 
+function getRandom(length: number): number {
+
+  return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
+
+}
 export function createEventId() {
-  return `${uuidv4()}${eventGuid++}`
+  return `${getRandom(lengthId)}${eventGuid++}`
+}
+
+export function getFirstOfWeek(date: Date) {
+  const today = date.getDate();
+  const currentDay = date.getDay();
+  const newDate = date.setDate(today - currentDay + 6);
+  return new Date(newDate);
+}
+
+export function getLastOfWeek(date: Date) {
+  const today = date.getDate();
+  const currentDay = date.getDay();
+  const newDate = date.setDate(today - (currentDay || 6));
+  return new Date(newDate);
 }

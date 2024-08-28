@@ -1,15 +1,16 @@
-import {ReactElement, useRef} from "react";
+import {ReactElement, useMemo, useRef} from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
-import {EventClickArg, EventContentArg,} from "@fullcalendar/core";
-// import {Sidebar} from "@/features/calendar/components/Sidebar.tsx";
+import {CalendarOptions, EventClickArg, EventContentArg,} from "@fullcalendar/core";
+import CalenderSidebar from "@/features/calendar/components/CalendarNavbar.tsx";
 import {useAppDispatch, useAppSelector} from "@/hooks/storeHook.ts";
 import {addEvent, removeEvent, updateEvent,} from "@/features/calendar/calendarSlice";
 import {createEventId} from "@/share/utils/calendarEvent.ts";
-import {CustomDatePicker} from "@/features/calendar/components/TestCalendar.tsx";
+import {CalendarSidebar} from "@/features/calendar/components/sidebar";
+import {calendarViews} from "@/share/utils/constants.ts";
 
 export default function Calendar(): ReactElement {
   const { events, resources, viewType, showWeekends } = useAppSelector(
@@ -20,9 +21,9 @@ export default function Calendar(): ReactElement {
 
   function handleDateSelect(selectInfo) {
     const title = prompt("Please enter a new title for your event");
+    const color = prompt("Please enter color");
     const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
-
     if (title) {
       const data = {
         id: createEventId(),
@@ -33,6 +34,8 @@ export default function Calendar(): ReactElement {
           ? { resourceId: selectInfo?.resource?._resource.id }
           : { resourceIds: resources.map((resource) => resource.id) }),
         allDay: selectInfo.allDay,
+        backgroundColor: color,
+        color: color,
       };
       dispatch(addEvent(data));
       calendarApi.addEvent(data);
@@ -62,55 +65,73 @@ export default function Calendar(): ReactElement {
         end: changeInfo.event.endStr,
         resourceId: changeInfo.event._def.resourceIds[0],
         allDay: changeInfo.event.allDay,
+        backgroundColor: changeInfo.event.backgroundColor,
+        color: changeInfo.event.color,
       };
       dispatch(updateEvent(data));
     }
   };
 
+  const calendarOptions = useMemo<CalendarOptions>(() => ({
+    schedulerLicenseKey: "GPL-My-Project-Is-Open-Source",
+    headerToolbar: false,
+    plugins: [
+      dayGridPlugin,
+      timeGridPlugin,
+      interactionPlugin,
+      resourceTimeGridPlugin,
+    ],
+    initialView: viewType,
+    datesAboveResources: true,
+    editable: true,
+    selectable: true,
+    dayMaxEventRows: true,
+    weekends: showWeekends
+  }), [viewType, showWeekends])
+
   return (
-    <div id="displayView" className="calendar-container calendar-mode-vertical display-vertical">
-      {/*<Sidebar calendarRef={calendarRef} />*/}
-      <CustomDatePicker calendarRef={calendarRef} />
-      <div className="wrapper-main-page">
-        <div className="view-calendar view-month">
-          <div id="fullCalendar" className="full-calendar">
-            <div id="fullcalendar_wrapper" className="full-calendar__wrapper">
-              <FullCalendar
-                schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-                ref={calendarRef}
-                headerToolbar={false}
-                initialView={viewType}
-                plugins={[
-                  dayGridPlugin,
-                  timeGridPlugin,
-                  interactionPlugin,
-                  resourceTimeGridPlugin,
-                ]}
-                datesAboveResources={true}
-                resources={resources}
-                editable={true}
-                selectable={true}
-                events={events}
-                weekends={showWeekends}
-                select={handleDateSelect}
-                eventContent={renderEventContent}
-                eventClick={handleEventClick}
-                eventChange={handleEventChange}
-                eventRemove={handleEventRemove}
-              />
+    <div className="flex">
+      <div id="displayView" className="calendar-container calendar-mode-vertical display-vertical w-4/5">
+        <CalenderSidebar calendarRef={calendarRef}/>
+        <div className="wrapper-main-page">
+          <div className="view-calendar view-month">
+            <div id="fullCalendar" className="full-calendar">
+              <div id="fullcalendar_wrapper" className="full-calendar__wrapper">
+                <FullCalendar
+                  {...calendarOptions}
+                  ref={calendarRef}
+                  resources={resources}
+                  events={events}
+                  select={handleDateSelect}
+                  eventContent={renderEventContent}
+                  eventClick={handleEventClick}
+                  eventChange={handleEventChange}
+                  eventRemove={handleEventRemove}
+                />
+              </div>
             </div>
           </div>
         </div>
+      </div>
+      <div className="sidebar">
+        <CalendarSidebar />
       </div>
     </div>
   );
 }
 
 function renderEventContent(eventInfo: EventContentArg) {
+
   return (
     <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
+      <div id={eventInfo.event.id}>
+        <div>
+          <div>{eventInfo.timeText} {eventInfo.event.id}</div>
+        </div>
+        <div>
+          {eventInfo.event.title}
+        </div>
+      </div>
     </>
   );
 }
