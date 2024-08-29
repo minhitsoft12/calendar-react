@@ -1,4 +1,4 @@
-import {ReactElement, RefObject, useMemo, useRef, useState} from "react";
+import {ReactElement, RefObject, useEffect, useMemo, useState} from "react";
 import FullCalendar from "@fullcalendar/react";
 import {Divider, Space, Switch} from "antd";
 import {calendarViews} from "@/share/utils/constants.ts";
@@ -19,20 +19,15 @@ const CalendarNavbar = ({calendarRef}: TCalendarHeader): ReactElement => {
   const [dateSelected, setDateSelected] = useState<Date>(dateNow);
   const [startDateSelected, setStartDateSelected] = useState<Date>(dateNow);
   const [endDateSelected, setEndDateSelected] = useState<Date>(dateNow);
-  const btnDropdownViewTypeRef = useRef<HTMLDivElement | null>(null)
   const dispatch = useAppDispatch();
 
   const selectViewHandle = (value: string) => {
-    return () => {
+    return (e) => {
       const calApi = calendarRef.current?.getApi();
       calApi?.changeView(value);
       calApi?.refetchEvents();
       dispatch(setViewType(value));
-      if (btnDropdownViewTypeRef.current) {
-        console.log(btnDropdownViewTypeRef.current);
-
-        btnDropdownViewTypeRef.current.click()
-      }
+      e.target.closest("details").removeAttribute("open")
     }
   };
 
@@ -65,15 +60,32 @@ const CalendarNavbar = ({calendarRef}: TCalendarHeader): ReactElement => {
 
   const viewTypeLabel = useMemo(() => calendarViews.find(view => view.value === viewType)?.label ?? "Calendar view", [viewType])
 
+  useEffect(() => {
+    const clickOutsideToClose = (e) => {
+      document.querySelectorAll("details.dropdown.close-outside").forEach(function (dropdown) {
+        if (!dropdown.contains(e.target)) {
+          dropdown.removeAttribute("open");
+        }
+      });
+    }
+    if (typeof window !== "undefined") {
+      window.addEventListener('click', clickOutsideToClose);
+    }
+
+    return () => {
+      window.removeEventListener('click', clickOutsideToClose)
+    }
+  }, []);
+
   return (
     <div className="navbar -mx-2">
       <div className="navbar-start">
-        <div className="dropdown dropdown-bottom">
-          <div tabIndex={0} ref={btnDropdownViewTypeRef} role="button" className="btn btn-outline font-normal btn-sm w-[90px] px-2">{viewTypeLabel}
+        <details className="dropdown dropdown-bottom close-outside">
+          <summary tabIndex={0} role="button" className="btn btn-outline font-normal btn-sm w-[90px] px-2">{viewTypeLabel}
             <svg width="6" height="3" className="ml-2 overflow-visible" aria-hidden="true">
               <path d="M0 0L3 3L6 0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
             </svg>
-          </div>
+          </summary>
           <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[10] w-[190px] text-sm p-2 shadow">
             {calendarViews.map(item => <li className={`m-0${viewType === item.value ? " bg-[#fff5d9]" : " "}`} key={item.value}><a onClick={selectViewHandle(item.value)}>{item.label}</a></li>)}
             <Divider style={{margin: '8px 0'}}/>
@@ -83,7 +95,7 @@ const CalendarNavbar = ({calendarRef}: TCalendarHeader): ReactElement => {
               }}/> Show weekends
             </Space>
           </ul>
-        </div>
+        </details>
       </div>
       <div className="navbar-center">
         <div className="join">
@@ -104,14 +116,14 @@ const CalendarNavbar = ({calendarRef}: TCalendarHeader): ReactElement => {
             }
           }}>Today
           </button>
-          <div className="dropdown dropdown-bottom join-item">
-            <div tabIndex={0} role="button" className="btn btn-outline font-normal btn-sm join-item">{dateFormat}</div>
+          <details className="dropdown dropdown-bottom join-item close-outside">
+            <summary tabIndex={0} role="button" className="btn btn-outline font-normal btn-sm join-item">{dateFormat}</summary>
             <div tabIndex={0} className="dropdown-content bg-base-100 rounded-box z-[10] p-2 shadow">
               {viewType === calendarViews[0].value
                 ? <DatePicker renderCustomHeader={DatePickerHeader} inline onChange={handleDateChange} monthsShown={2} selected={dateSelected} startDate={dateSelected} /> :
-                <DatePicker inline startDate={startDateSelected} endDate={endDateSelected} onChange={handleDateChange} monthsShown={2} selectsRange={true}/>}
+                <DatePicker renderCustomHeader={DatePickerHeader} inline startDate={startDateSelected} endDate={endDateSelected} onChange={handleDateChange} monthsShown={2} selectsRange/>}
             </div>
-          </div>
+          </details>
           <button className="btn join-item btn-outline font-normal btn-sm" onClick={() => {
             const calApi = calendarRef.current?.getApi();
             if (calApi) {

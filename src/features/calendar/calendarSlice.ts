@@ -1,19 +1,20 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { EventInput } from "@fullcalendar/core";
-import { ResourceInput } from "@fullcalendar/resource";
-import { INITIAL_EVENTS } from "@/share/utils/calendarEvent.ts";
-import { calendarViews } from "@/share/utils/constants.ts";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {EventInput} from "@fullcalendar/core";
+import {ResourceInput} from "@fullcalendar/resource";
+import {calendarViews} from "@/share/utils/constants.ts";
 
 interface CalendarSlice {
   viewType: string;
   events: EventInput[];
+  externalEvents: EventInput[];
   resources: ResourceInput[];
   showWeekends: boolean;
 }
 
 const initialState: CalendarSlice = {
   viewType: calendarViews[1].value,
-  events: INITIAL_EVENTS,
+  events: [],
+  externalEvents: [],
   resources: [
     { id: "invoice1", title: "Invoice 1" },
     { id: "invoice2", title: "Invoice 2" },

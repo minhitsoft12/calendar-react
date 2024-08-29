@@ -10,7 +10,6 @@ import {useAppDispatch, useAppSelector} from "@/hooks/storeHook.ts";
 import {addEvent, removeEvent, updateEvent,} from "@/features/calendar/calendarSlice";
 import {createEventId} from "@/share/utils/calendarEvent.ts";
 import {CalendarSidebar} from "@/features/calendar/components/sidebar";
-import {calendarViews} from "@/share/utils/constants.ts";
 
 export default function Calendar(): ReactElement {
   const { events, resources, viewType, showWeekends } = useAppSelector(
@@ -57,6 +56,7 @@ export default function Calendar(): ReactElement {
   };
 
   const handleEventChange = (changeInfo) => {
+    console.log(changeInfo)
     if (changeInfo.event._def.resourceIds[0]) {
       const data = {
         id: changeInfo.event.id,
@@ -70,6 +70,20 @@ export default function Calendar(): ReactElement {
       };
       dispatch(updateEvent(data));
     }
+  };
+
+  const handleEventReceive = (eventInfo) => {
+    const newEvent = {
+      id: eventInfo.draggedEl.getAttribute("data-id"),
+      title: eventInfo.draggedEl.getAttribute("title"),
+      color: eventInfo.draggedEl.getAttribute("data-color"),
+      backgroundColor: eventInfo.draggedEl.getAttribute("data-backgroundcolor"),
+      start: eventInfo.date,
+      end: eventInfo.date,
+      custom: eventInfo.draggedEl.getAttribute("data-custom")
+    };
+
+    dispatch(addEvent(newEvent))
   };
 
   const calendarOptions = useMemo<CalendarOptions>(() => ({
@@ -86,11 +100,14 @@ export default function Calendar(): ReactElement {
     editable: true,
     selectable: true,
     dayMaxEventRows: true,
-    weekends: showWeekends
-  }), [viewType, showWeekends])
+    dayMaxEvents: true,
+    weekends: showWeekends,
+    droppable: true,
+    selectMirror: true
+  } as CalendarOptions), [viewType, showWeekends])
 
   return (
-    <div className="flex">
+    <div className="flex relative">
       <div id="displayView" className="calendar-container calendar-mode-vertical display-vertical w-4/5">
         <CalenderSidebar calendarRef={calendarRef}/>
         <div className="wrapper-main-page">
@@ -107,13 +124,17 @@ export default function Calendar(): ReactElement {
                   eventClick={handleEventClick}
                   eventChange={handleEventChange}
                   eventRemove={handleEventRemove}
+                  eventAdd={(c) => {
+                    console.log(c)}}
+                  eventsSet={(e) => {
+                    console.log(e)}}
                 />
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="sidebar">
+      <div className="sidebar h-[60vh] overflow-scroll sticky top-5">
         <CalendarSidebar />
       </div>
     </div>

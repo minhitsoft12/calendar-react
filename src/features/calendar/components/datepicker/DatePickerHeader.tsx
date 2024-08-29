@@ -4,14 +4,14 @@ import {months, years} from "@/share/utils/constants";
 import {getMonth, getYear} from "date-fns";
 
 const DatePickerHeader = ({
-                            date,
-                            changeYear,
-                            changeMonth,
-                            decreaseMonth,
-                            increaseMonth,
-                            prevMonthButtonDisabled,
-                            nextMonthButtonDisabled,
-                          }: ReactDatePickerCustomHeaderProps): ReactElement => {
+  monthDate,
+  changeYear,
+  changeMonth,
+  decreaseMonth,
+  increaseMonth,
+  prevMonthButtonDisabled,
+  nextMonthButtonDisabled
+}: ReactDatePickerCustomHeaderProps): ReactElement => {
   return (
     <div className="datepicker-header-custom flex justify-between h-[46px] items-center border-b-[1px_solid_#ebeff3]">
       <div className={`btn btn-ghost p-0 w-[24px] min-h-max h-[24px] --previous v2-btn-default --icon-sm --transparent ${prevMonthButtonDisabled ? "pointer-events-none disabled" : ""}`} onClick={decreaseMonth}>
@@ -21,7 +21,7 @@ const DatePickerHeader = ({
       </div>
       <div className="flex items-center gap-1">
         <div className="datepicker-header-custom__option --month">
-          <select value={months[getMonth(date)]}
+          <select value={months[getMonth(monthDate)]}
                   onChange={({target: {value}}) =>
                     changeMonth(months.indexOf(value))
                   } className="select select-bordered select-xs pr-2 max-w-xs !outline-0 text-[.875rem]">
@@ -29,7 +29,7 @@ const DatePickerHeader = ({
           </select>
         </div>
         <div className="datepicker-header-custom__option --year">
-          <select value={getYear(date)}
+          <select value={getYear(monthDate)}
                   onChange={({target: {value}}) => changeYear(Number(value))} className="select select-bordered select-xs w-full max-w-xs !outline-0 text-[.875rem]">
             {years.map(year => <option key={year}>{year}</option>)}
           </select>
