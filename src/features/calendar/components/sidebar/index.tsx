@@ -1,6 +1,7 @@
 import {useAppSelector} from "@/hooks/storeHook";
 import {forwardRef, useEffect, useRef} from "react";
 import {Draggable} from "@fullcalendar/interaction"
+import {dateFormat} from "@/share/utils/constants.ts";
 
 interface Props {
 
@@ -57,11 +58,13 @@ export const CalendarSidebar = forwardRef<Props, ComponentRef>(({}, ref) => {
           style={{
             backgroundColor: event.backgroundColor,
             borderColor: event.color,
+            borderWidth: "0 0 0 3px",
             cursor: "pointer"
           }}
         >
           <div className="fc-event-main">
-            <div>
+            <div className="min-h-[50px]">
+              <p>{new Date(event.start).toLocaleDateString()} - {new Date(event.end).toLocaleDateString()}</p>
               <strong>{event.title}</strong>
             </div>
             {event.custom}
