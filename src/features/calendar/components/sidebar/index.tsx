@@ -1,24 +1,15 @@
 import {useAppSelector} from "@/hooks/storeHook";
-import {forwardRef, useEffect, useRef} from "react";
-import {Draggable} from "@fullcalendar/interaction"
-import {dateFormat} from "@/share/utils/constants.ts";
+import {ReactElement, useEffect, useRef} from "react";
+import {Draggable} from "@fullcalendar/interaction";
 
-interface Props {
-
-}
-
-interface ComponentRef {
-
-}
-
-export const CalendarSidebar = forwardRef<Props, ComponentRef>(({}, ref) => {
+export const CalendarSidebar = (): ReactElement => {
   const externalEvents = useAppSelector(state => state.calendar.externalEvents);
   const initialized = useRef(false);
 
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-      let draggableEl = document.getElementById("external-events");
+      const draggableEl = document.getElementById("external-events");
       if (draggableEl) {
         new Draggable(draggableEl, {
           itemSelector: ".fc-event",
@@ -73,4 +64,4 @@ export const CalendarSidebar = forwardRef<Props, ComponentRef>(({}, ref) => {
       ))}
     </div>
   </div>
-})
+};
